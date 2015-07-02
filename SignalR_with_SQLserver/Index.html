@@ -1,0 +1,56 @@
+﻿
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Testing SignalR</title>
+    <script src="Scripts/jquery-1.6.4.js"></script>
+    <script src="Scripts/jquery.signalR-2.2.0.js"></script>
+    <script src="signalr/hubs" type="text/javascript"></script>
+    <script type="text/javascript">
+        
+        $(function () {
+
+            //declare a reference to a hub proxy
+            var incident = $.connection.incidentHub;
+
+            //here i declare a function on the incident hub so that the server can be able to invoke it
+            incident.client.displayStatus = function () {
+                getData();
+            };
+
+ 
+            /**
+            *here i ensure that the connection is established before the event handler executes
+            */
+            $.connection.hub.start();
+            getData();
+        });
+
+        function getData() {
+            var $tb1 = $('#tb1IncidentInfo');
+            $.ajax({
+                success: function (data) {
+                    if (data.length > 0) {
+                        $tb1.empty();
+                        $tb1.append('<tr><th>IncidentID</th><th>Incident Type</th><th>Status</th><th>Location</th><th>Date</th><th>Time</th><th>Dispatched</th></tr>');
+                        var rows = [];
+                        for (var i = 0; i < data.length; i++) {
+                            rows.push('<tr><td>' + data[i].incidentID + '</td><td>' + data[i].incidentType + '</td><td>' + data[i].status + '</td><td>' + data[i].location + '</td><td>' + data[i].date + '</td><td>' + data[i].time + '</td><td>' + data[i].dispatched + '</td></tr>');
+
+                        }
+                        $tb1.append(rows.join(''));
+
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <table id="tb1IncidentInfo" style="text-align:center;margin-left:10px">
+
+        </table>
+    </div>
+</body>
+</html>
